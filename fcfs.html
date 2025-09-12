@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FCFS Scheduling</title>
+</head>
+<body>
+<h2>FCFS Scheduling</h2>
+<table border="1" cellpadding="5">
+<tr>
+<th>Process</th>
+<th>Arrival Time</th>
+<th>Burst Time</th>
+<th>Completion Time</th>
+<th>Turnaround Time</th>
+<th>Waiting Time</th>
+</tr>
+<tbody id="output"></tbody>
+</table>
+<h3>Gantt Chart</h3>
+<div id="gantt" style="display:flex;align-items:center;"></div>
+<div id="time"></div>
+<script>
+// Example input: processes with arrival & burst times
+let processes = [
+{pid: "P1", arrival: 0, burst: 5},
+{pid: "P2", arrival: 1, burst: 3},
+{pid: "P3", arrival: 2, burst: 8}
+];
+// Sort by arrival time
+processes.sort((a,b) => a.arrival - b.arrival);
+let time = 0;
+processes.forEach(p => {
+if(time < p.arrival) time = p.arrival;
+p.start = time;
+p.completion = time + p.burst;
+p.tat = p.completion - p.arrival;
+p.wait = p.start - p.arrival;
+time = p.completion;
+});
+// Show result in table
+let tbody = document.getElementById("output");
+processes.forEach(p => {
+tbody.innerHTML += `
+<tr>
+<td>${p.pid}</td>
+<td>${p.arrival}</td>
+<td>${p.burst}</td>
+<td>${p.completion}</td>
+<td>${p.tat}</td>
+<td>${p.wait}</td>
+</tr>
+`;
+});
+// Create Gantt Chart
+let ganttDiv = document.getElementById("gantt");
+let timeDiv = document.getElementById("time");
+processes.forEach(p => {
+let box = document.createElement("div");
+box.style.border = "1px solid black";
+box.style.padding = "10px";
+box.style.margin = "2px";
+box.style.minWidth = (p.burst * 20) + "px"; // width proportional to burst time
+box.style.textAlign = "center";
+box.style.background = "#add8e6";
+box.innerText = p.pid;
+ganttDiv.appendChild(box);
+});
+// Timeline (start and completion times)
+let timeline = "";
+processes.forEach(p => {
+timeline += p.start + " ".repeat(p.burst) + p.completion + " ";
+});
+timeDiv.innerText = "Timeline: " + processes.map(p=>`[${p.start}-${p.completion}]`).join(" ");
+</script>
+</body>
+</html>
+Site
